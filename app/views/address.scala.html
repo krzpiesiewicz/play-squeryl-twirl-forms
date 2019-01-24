@@ -1,0 +1,34 @@
+@* address Template File *@
+@import forms.AddressForms._
+@import helper._
+
+@(addressForm: AddressForm)(implicit messages: Messages, request: RequestHeader)
+
+  @form(action = addressForm match {
+    case uaf: UrbanAddressForm => routes.AddressController.urbanAddressPost()
+    case caf: CountrysideAddressForm => routes.AddressController.countrysideAddressPost()
+  }) {
+	@CSRF.formField
+	@addressForm match {
+	  case caf: CountrysideAddressForm => {
+	    @inputText(caf("country"))
+	    @inputText(caf("state"))
+	    @inputText(caf("county"))
+	    @inputText(caf("houseNumber"))
+	    @inputText(caf("location.latitude"))
+	    @inputText(caf("location.longitude"))
+	  }
+	  case uaf: UrbanAddressForm => {
+	    @inputText(uaf("country"))
+	    @inputText(uaf("state"))
+	    @inputText(uaf("city"))
+	    @inputText(uaf("street"))
+	    @inputText(uaf("houseNumber"))
+	    @inputText(uaf("flatNumber"))
+	    @inputText(uaf("location.latitude"))
+	    @inputText(uaf("location.longitude"))
+	  }
+	}
+    @formErrors(addressForm)
+	<input type="submit" value="Submit">
+  }

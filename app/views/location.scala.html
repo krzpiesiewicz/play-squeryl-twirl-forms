@@ -1,0 +1,22 @@
+@* location Template File *@
+@(locationForm: Form[Location])(implicit messages: Messages, request: RequestHeader)
+@import helper._
+
+@main("Location Tester") {
+  <h1>Location Tester</h1>
+  <div>
+  @form(action = routes.AddressController.locationPost()) {
+	@CSRF.formField
+	@inputText(locationForm("latitude"))
+	@inputText(locationForm("longitude"))
+    @if(locationForm.hasErrors) {
+      <ul>
+  	  @for(error <- locationForm.errors) {
+        <li>@error.format</li>
+      }
+      </ul>
+    }
+	<input type="submit" value="Submit">
+  }
+  </div>
+}

@@ -1,0 +1,17 @@
+@* addresses Template File *@
+@import forms.AddressForms.AddressForm
+@import helper._
+
+@(addresses: Iterable[Address], addressForm: AddressForm)(implicit messages: Messages, request: RequestHeader)
+
+@main("Addresses") {
+  <h1>Addresses</h1>
+  <div>
+  @for(a <- addresses) {
+    <div>@a.location</div>
+  }
+  </div>
+  <div>
+  @address(addressForm)
+  </div>
+}
