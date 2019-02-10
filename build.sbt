@@ -12,6 +12,9 @@ routesGenerator := play.routes.compiler.InjectedRoutesGenerator
 // for functional programming:
 libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.2.27"
 
+// for reflection:
+libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
+
 // for H2 database
 // libraryDependencies += "com.h2database" % "h2" % "1.2.127"
 
@@ -54,6 +57,7 @@ libraryDependencies += "com.typesafe.play" %% "play-jdbc-evolutions" % "2.7.0-M4
 libraryDependencies += "com.iterable" %% "iterableplayutils" % "2.0.0"
 
 import DatabaseManaging._
-commands ++= Seq(cleanupEvolutions, dropEvolutions, dropDb, createDdl, createDbExplicitly)
+import CreatingExampleData._
+commands ++= Seq(cleanupEvolutions, dropEvolutions, dropDb, createDdl, createDbExplicitly, createExampleData)
 
-PlayKeys.devSettings ++= Seq("play.server.http.port" -> "9000", "play.server.https.port" -> "9001", "play.server.https.engineProvider" -> "CustomSSLEngineProvider")
+PlayKeys.devSettings ++= Seq("play.server.http.port" -> "9000")

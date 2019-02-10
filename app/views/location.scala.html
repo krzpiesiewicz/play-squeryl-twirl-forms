@@ -2,21 +2,14 @@
 @(locationForm: Form[Location])(implicit messages: Messages, request: RequestHeader)
 @import helper._
 
-@main("Location Tester") {
-  <h1>Location Tester</h1>
+@page(messages("nav.locationExample")) {
   <div>
+  <h1>@messages("locationTester")</h1>
   @form(action = routes.AddressController.locationPost()) {
 	@CSRF.formField
 	@inputText(locationForm("latitude"))
 	@inputText(locationForm("longitude"))
-    @if(locationForm.hasErrors) {
-      <ul>
-  	  @for(error <- locationForm.errors) {
-        <li>@error.format</li>
-      }
-      </ul>
-    }
-	<input type="submit" value="Submit">
+	<input type="submit" value="@messages("check")">
   }
   </div>
-}
+}()

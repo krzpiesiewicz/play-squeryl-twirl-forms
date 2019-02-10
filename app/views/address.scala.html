@@ -1,34 +1,24 @@
 @* address Template File *@
-@import forms.AddressForms._
-@import helper._
+@import models._
 
-@(addressForm: AddressForm)(implicit messages: Messages, request: RequestHeader)
+@(a: Address)
 
-  @form(action = addressForm match {
-    case uaf: UrbanAddressForm => routes.AddressController.urbanAddressPost()
-    case caf: CountrysideAddressForm => routes.AddressController.countrysideAddressPost()
-  }) {
-	@CSRF.formField
-	@addressForm match {
-	  case caf: CountrysideAddressForm => {
-	    @inputText(caf("country"))
-	    @inputText(caf("state"))
-	    @inputText(caf("county"))
-	    @inputText(caf("houseNumber"))
-	    @inputText(caf("location.latitude"))
-	    @inputText(caf("location.longitude"))
-	  }
-	  case uaf: UrbanAddressForm => {
-	    @inputText(uaf("country"))
-	    @inputText(uaf("state"))
-	    @inputText(uaf("city"))
-	    @inputText(uaf("street"))
-	    @inputText(uaf("houseNumber"))
-	    @inputText(uaf("flatNumber"))
-	    @inputText(uaf("location.latitude"))
-	    @inputText(uaf("location.longitude"))
-	  }
+
+@a match {
+	case ua: UrbanAddress => {
+		@ua.street @ua.houseNumber
+		@ua.flatNumber match {
+			case Some(no) => { / @no}
+			case None => {}
+		}
+		<br/>
+		@ua.city (@ua.state)
+		<br/>
+		@ua.country
 	}
-    @formErrors(addressForm)
-	<input type="submit" value="Submit">
-  }
+	case ca: CountrysideAddress => {
+		@ca.county @ca.houseNumber (@ca.state)
+		<br/>
+		@ca.country
+	}
+}

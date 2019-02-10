@@ -1,0 +1,18 @@
+@* address Template File *@
+@import forms.AddressForms._
+@import helper._
+
+@(f: Form[CountrysideAddress], idOpt: Option[Long] = None)(implicit messages: Messages, request: RequestHeader)
+
+  @form(action = routes.AddressController.countrysideAddressPost()) {
+	@CSRF.formField
+	@hiddenId(idOpt)
+    @inputText(f("country"))
+    @inputText(f("state"))
+    @inputText(f("county"))
+    @inputText(f("houseNumber"))
+    @inputText(f("location.latitude"), '_label -> messages("latitude"))
+    @inputText(f("location.longitude"), '_label -> messages("longitude"))
+    @formErrors(f)
+	<input type="submit" value=@messages("submit")>
+  }

@@ -1,17 +1,100 @@
 @* addresses Template File *@
-@import forms.AddressForms.AddressForm
+@import forms.Forms.{AddressForm, UrbanAddressForm, CountrysideAddressForm}
+@import database.DBSchema.AddressDAO
+@import controllers.{AddressController => AC}
 @import helper._
 
-@(addresses: Iterable[Address], addressForm: AddressForm)(implicit messages: Messages, request: RequestHeader)
+@(addresses: Iterable[AddressDAO], addressProps: AC.AddressProps, msgOpt: Option[String], urlToRedirectOpt: Option[String])(implicit messages: Messages, request: RequestHeader)
 
-@main("Addresses") {
-  <h1>Addresses</h1>
-  <div>
-  @for(a <- addresses) {
-    <div>@a.location</div>
+@*@createNewAddressLink = {
+	<div>
+		<h1>Create new address</h1>
+		<a 
+href="@routes.AddressController.addresses">Create new address</a>
+	</div>
+}*@
+
+@addressesBlock = {
+	<div>
+	  <h1>@messages("addresses.addresses")</h1>
+	  @if(!addresses.isEmpty) {
+	  	<table>
+	  	<tr>
+	  	<th>Id</th>
+	  	<th>@messages("addresses.address")</th>
+	  	</tr>
+	  	@for(a <- addresses) {
+	   		<tr>
+	   		<th>
+	   		<a href="@routes.AddressController.addressesWithOneSelected(a.id)">@a.id</a>
+	   		</th>
+	   		<th>
+	    	@address(a.address)
+	    	</th>
+	    	</tr>
+	  	}
+	  	</table>
+	 }
+  	</div>
+}
+
+@newAddressBlock(uaf: UrbanAddressForm = forms.Forms.urbanAddressForm,
+			caf: CountrysideAddressForm = forms.Forms.countrysideAddressForm,
+			addressType: String = "") = {
+	<div>
+ 		<h1>@messages("addresses.addNewAddress")</h1>
+ 		<form>
+ 		<input type="radio" name="addressType" value="newUrbanAddress" @if(addressType == "urban") {checked}>
+ 		<label for="urban"> @messages("addresses.urbanAddress")</label>
+ 		
+ 		<input type="radio" name="addressType" value="newCountrysideAddress" @if(addressType == "countryside") {checked}>
+ 		<label for="countryside"> @messages("addresses.countrysideAddress")</label>
+ 		</form>
+ 		<div name="newAddress" id="newUrbanAddress" hidden>
+   			@urbanAddressForm(uaf.form)
+ 		</div>
+ 		<div name="newAddress" id="newCountrysideAddress" hidden>
+	 		@countrysideAddressForm(caf.form)
+ 		</div>
+	</div>
+}
+
+@page(messages("nav.addressesExample")) {
+
+  @addressesBlock
+  
+  @addressProps match {
+  	case AC.AddressNotFound(addressId) => {
+  		<div>
+  			<h1>@messages("addresses.addressNotFound", addressId)</h1>
+  		</div>
+  		@newAddressBlock()
+  	}
+  	case AC.EditAddress(addressId, addressForm) => {
+  		<div>
+	  		<h1>@messages("addresses.addressOfId", addressId)</h1>
+	  		<form action="@routes.AddressController.addressDelete(addressId)" method="POST">
+	  			@CSRF.formField
+	  			<input type="submit" value="@messages("delete")"/> 
+	  		</form>
+	  		@addressForm match {
+	  			case uaf: UrbanAddressForm => {@urbanAddressForm(uaf.form, Some(addressId))}
+	  			case caf: CountrysideAddressForm => {@countrysideAddressForm(caf.form, Some(addressId))}
+	  		}
+  		</div>
+  		@newAddressBlock()
+  	}
+  	case AC.NewAddress(addressForm) => {
+  		@addressForm match {
+ 			case uaf: UrbanAddressForm => {@newAddressBlock(uaf = uaf, addressType = "urban")}
+ 			case caf: CountrysideAddressForm => {@newAddressBlock(caf = caf, addressType = "countryside")}
+ 		}
+  	}
   }
-  </div>
-  <div>
-  @address(addressForm)
-  </div>
+} {
+	<script type="text/javascript">
+	<!--
+	@Html(views.js.addresses(msgOpt, urlToRedirectOpt).toString)
+	//-->
+	</script>
 }

@@ -1,18 +1,14 @@
-import java.sql.DriverManager
-import java.io.StringWriter
+package database
+
 import java.io.PrintWriter
 import java.io.File
-import java.lang.Exception
-
-import org.squeryl.{ Session, SessionFactory }
+import org.squeryl.Session
+import org.squeryl.SessionFactory
 import org.squeryl.adapters.SQLiteAdapter
-
 import com.typesafe.config.ConfigFactory
-
 import play.api.db.Databases
 import play.api.db.evolutions.Evolutions
 import play.api.Logger
-
 import ArgsUtil._
 
 class DatabaseManager(val dbName: String) {
@@ -129,6 +125,7 @@ object DroppingDatabase {
     dbManager.createAndBindSession()
     Logger.info(s"Dropping database '$name'")
     database.DBSchema.drop
+    dbManager.dropEvolutions()
   }
 }
 

@@ -1,24 +1,22 @@
-import com.softwaremill.macwire._
+package main
 
+import com.softwaremill.macwire._
 import play.inject.guice.GuiceApplicationLoader
 import play.api.ApplicationLoader.Context
 import play.api.routing.Router
-
 import play.api.db.DBComponents
 import play.api.db.evolutions.EvolutionsComponents
 import play.api.db.HikariCPComponents
+import play.api.i18n.I18nComponents
 import play.api.BuiltInComponentsFromContext
-import play.api.http.HttpErrorHandler
-
 import play.filters.HttpFiltersComponents
-
 import controllers.HomeController
 import controllers.AddressController
-import controllers.Assets
 import controllers.AssetsComponents
-
 import akka.actor.ActorSystem
 import router.Routes
+import javax.inject.Singleton
+
 
 class CustomLoader extends GuiceApplicationLoader {
   def load(context: Context) = new ApplicationComponents(context).application
@@ -31,12 +29,13 @@ class ApplicationComponents(context: Context) extends BuiltInComponentsFromConte
   with AssetsComponents
   with DBComponents
   with EvolutionsComponents
-  with HikariCPComponents {
+  with HikariCPComponents
+  with I18nComponents {
   lazy val appActorSystem: ActorSystem = actorSystem
   lazy val homeController = wire[HomeController]
   lazy val addressController = wire[AddressController]
 //  lazy val router = wire[Routes]
   lazy val router: Router = new Routes(httpErrorHandler, homeController, addressController, assets)
-
+  
   applicationEvolutions
 }

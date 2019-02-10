@@ -1,0 +1,19 @@
+@* langChooser Template File *@
+@import main.ScalaI18nService
+
+@()(implicit messages: Messages, request: RequestHeader)
+
+<form action="/lang/redirect">
+	<select name="langCode" onchange="this.form.submit()">
+		@for(lang <- ScalaI18nService.availableLangs) {
+			<option value="@lang.code" 
+			@if(messages.lang.code == lang.code) {
+				selected
+			}
+			>@lang.language.toUpperCase</option>
+		}
+	</select>
+	<input type="" name="method" value="@request.method" hidden/>
+	<input type="text" name="uri" value="@request.uri" hidden/>
+	<input type="submit" hidden/>
+</form>

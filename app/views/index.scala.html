@@ -1,5 +1,5 @@
-@()
+@()(implicit messages: Messages, request: RequestHeader)
 
-@main("Welcome to Play") {
-  <h1>Welcome to Play!</h1>
-}
+@page(messages("nav.home")) {
+  <h1>@messages("home.text")</h1>
+}()

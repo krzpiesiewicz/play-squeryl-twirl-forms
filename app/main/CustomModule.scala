@@ -1,6 +1,7 @@
+package main
+
 import org.squeryl.{ Session, SessionFactory }
 import org.squeryl.adapters.SQLiteAdapter
-
 import com.google.inject._
 
 @Singleton
@@ -18,7 +19,7 @@ class GlobalContext @Inject() (injector: Injector) {
 }
 
 object GlobalContext {
-  private var injector: Injector = null
+  var injector: Injector = null
 }
 
 class CustomModule extends AbstractModule {

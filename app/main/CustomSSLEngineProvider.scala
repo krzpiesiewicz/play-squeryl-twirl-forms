@@ -1,3 +1,5 @@
+package main
+
 import javax.net.ssl._
 import play.core.ApplicationProvider
 import play.server.api._
@@ -7,4 +9,5 @@ class CustomSSLEngineProvider(appProvider: ApplicationProvider) extends SSLEngin
   override def createSSLEngine(): SSLEngine = {
     SSLContext.getDefault.createSSLEngine
   }
+
 }

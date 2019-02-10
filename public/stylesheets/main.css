@@ -1,0 +1,130 @@
+* {
+    margin:0;
+    padding: 0;
+}
+
+/* General: */
+
+html, body {
+    background-color: #fff;
+    color: #000;
+}
+
+header {
+    background-color: #333;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+header > *:first-child {
+	margin-right: auto;
+}
+
+header span {
+    padding: 10px;
+    color: white;
+}
+
+header span.title {
+    font-size: x-large;
+    font-family: sans-serif;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    align-self: flex-end;
+    width: calc(100% - 40px);
+
+}
+
+#main-container-scroll > * {
+    display: flex;
+    flex-direction: column;
+    overflow: no-display;
+    height: initial;
+    display: flex;
+    flex-direction: column;
+}
+
+article {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+}
+
+article * {
+    padding: auto;
+    margin: auto;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+article > * {
+	padding-right: 10px;
+	padding-left: 10px;
+    margin: 0;
+}
+
+dd.error {
+	color: red;
+}
+
+dd.info {
+	font-style: italic;
+	font-size: 0.85em;
+}
+
+@media (min-width: 1300px) {
+    html, body {
+        height: 100%;
+        width: 100%;
+        display: block;
+        overflow: hidden;
+    }
+
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 4;
+        height: 60px;
+        overflow: hidden;
+        background-color: #333;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    /*header span {
+        font-size: xx-large;
+    }*/
+
+    #main-container-scroll {
+        float: left;
+        position: absolute;
+        width: calc(100% - 200px);
+        height: calc(100% - 60px);
+        left: 200px;
+        top: 60px;
+        display: block;
+        overflow: scroll;
+        overflow-x: auto;
+    }
+
+    #main-container-scroll div {
+        min-height: 100%;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+   /* header span {
+        letter-spacing: 10px;
+    }*/
+}

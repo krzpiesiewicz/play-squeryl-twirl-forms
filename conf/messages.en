@@ -1,0 +1,41 @@
+footer=Example PlayFramework 2.6 MVC project by Krzyszof Piesiewicz.
+
+nav.home=Home
+nav.locationExample=Simple location example
+nav.addressesExample=Addresses example
+
+check=Check
+register=Register
+login=Login
+logout=Logout
+loggedAs=Logged as
+
+home.text=Welcome in the example MVC webpage.
+
+latitude=Latitude
+longitude=Longitude
+latitudeError=Latitude val should be in interval [-90, 90].
+longitudeError=Longitude val should be in interval [-180, 180).
+
+country=Country
+state=State
+city=City
+street=Street
+houseNumber=House number
+flatNumber=Flat number
+county=County
+
+locationTester=Location tester
+
+submit=Submit
+delete=Delete
+
+addresses.urbanAddress=urban address
+addresses.countrysideAddress=countryside address
+addresses.addNewAddress=Add new address
+addresses.addressNotFound=Address of id {0} not found!
+addresses.addressOfId=Address of id {0}
+addresses.addresses=Addresses
+addresses.address=Address
+
+addresses.addressCreated=The address added successfully.
