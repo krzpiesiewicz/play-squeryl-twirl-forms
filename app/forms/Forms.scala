@@ -4,31 +4,44 @@ import scala.reflect.runtime.universe._
 
 import play.api.data._
 import play.api.data.Forms._
+import play.twirl.api.Html
 
 import models._
+import play.api.i18n.Messages
+import play.api.mvc.RequestHeader
+import scala.reflect._
+import play.api.mvc.Request
+
+import ClassTagsHelper._
+import play.api.mvc.AnyContent
 
 object Forms {
   
   val locationForm = Form(Location.mapping)
   
-  sealed trait AddressForm {
-    type T
-    type A = T with Address
-    val form: Form[A]
-    def create(form: Form[A]): AddressForm
+  object addressFormHelper extends TraitFormHelper[Address] {
+    
+    override def getTraitFormFromRequest(prefixKey: String = "")(implicit request: Request[AnyContent]) = {
+      
+      val cannot = "Cannot find proper TypedForm[Address, _ <: Address]."
+      
+      Form(single(classTagFieldName(prefixKey) -> text)).bindFromRequest().fold(
+          formWithErrors => Left(s"$cannot Form does not contain field: ${classTagFieldName(prefixKey)}"),
+          classTagString => classTagString match {
+            case s if s == classTag[UrbanAddress].toString => Right(urbanAddressForm)
+            case s if s == classTag[CountrysideAddress].toString => Right(countrysideAddressForm)
+            case _ => Left(s"$cannot Unknown classTag: $classTagString")
+          }
+      )
+    }
+    
+    override def getTraitFormForModel(address: Address) = address match {
+      case uaf: UrbanAddress => urbanAddressForm
+      case caf: CountrysideAddress => countrysideAddressForm
+    }
   }
   
-  class UrbanAddressForm(override val form: Form[UrbanAddress]) extends AddressForm {
-    type T = UrbanAddress
-    override def create(form: Form[A]): UrbanAddressForm = new UrbanAddressForm(form.asInstanceOf[Form[UrbanAddress]])
-  }
+  implicit val urbanAddressForm = new TypedForm[Address, UrbanAddress](Form(UrbanAddress.mapping))
   
-  class CountrysideAddressForm(override val form: Form[CountrysideAddress]) extends AddressForm {
-    type T = CountrysideAddress
-    override def create(form: Form[A]): CountrysideAddressForm = new CountrysideAddressForm(form.asInstanceOf[Form[CountrysideAddress]])
-  }
-  
-  val urbanAddressForm = new UrbanAddressForm(Form(UrbanAddress.mapping))
-  
-  val countrysideAddressForm = new CountrysideAddressForm(Form(CountrysideAddress.mapping))
+  implicit val countrysideAddressForm = new TypedForm[Address, CountrysideAddress](Form(CountrysideAddress.mapping))
 }

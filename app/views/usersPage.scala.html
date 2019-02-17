@@ -1,0 +1,83 @@
+@* usersPage Template File *@
+@import scala.reflect.{ClassTag,classTag}
+@import helper._
+
+@import models._
+@import forms._
+@import database.DBSchema.AddressDAO
+@import controllers.{AddressController => AC}
+
+@import views.FormRenderersHelper._
+@import elements.script
+
+@(userDataForm: Form[UserData],
+  addressFormOpt: Option[TraitForm[Address]] = None,
+  userOpt: Option[User] = None,
+  msgOpt: Option[String] = None,
+  urlToRedirectOpt: Option[String] = None)(implicit
+  messages: Messages,
+  request: RequestHeader,
+  renderer: TraitFormRenderer[Address])
+
+@userBlock = {
+  @userOpt match {
+  	case None => {}
+    case Some(user) => {
+  	  <div>
+        <h1>@messages("user.data")</h1>
+        <table>
+          <tr>
+            <th>@messages("username")</th><td>@user.username</td>
+          </tr>
+        </table>
+	  </div>
+	}
+  }
+}
+
+@formBlock = {
+  <div>
+	<h1>@messages("user.form")</h1>
+	@form(action = routes.UserController.userPost(), 'id -> "userForm") {
+	  <div id="userFormDivsContainer">
+  	    <div>
+	      @CSRF.formField
+	      @inputText(userDataForm("username"))
+	      @inputPassword(userDataForm("password"))
+	      @repeat(userDataForm("emails"), min = 1) { emailField =>
+    	    @inputText(emailField)
+          }
+        </div>
+        <div>
+          @inputText(userDataForm("firstName"))
+	      @inputText(userDataForm("lastName"))
+	      @inputRadioGroup(userDataForm("sex"), options = List("male" -> "male", "female" -> "female"))
+	      @inputDate(userDataForm("dateOfBirth"))
+        </div>
+        <div>
+          @addresses.formswitcher.renderRadios(switcherId, "address.")
+	      @addresses.formswitcher.renderDivsWithFields(switcherId, "address.")
+        </div>
+        <div>
+          @textarea(userDataForm("aboutMe"))
+          @checkbox(userDataForm("confirmation"), 'info -> "constraints.required")
+          @checkbox(userDataForm("subscription"))     
+        </div>
+      </div>
+      <div>
+        <input type="submit" value="@messages("submit")">
+      </div>
+	}
+  </div>
+}
+
+@switcherId = @{"newAddress"}
+
+@pagetemplate.page(messages("nav.usersExample")) {
+  @formBlock
+  @userBlock
+} {
+    @script(views.js.pagetemplate.msgAndRedirection(msgOpt, urlToRedirectOpt))
+    @script(views.js.traitformswitcher.traitFormSwitcher(switcherId, "address."))
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/users.css")">
+}

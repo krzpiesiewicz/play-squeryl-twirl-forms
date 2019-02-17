@@ -10,9 +10,12 @@ import play.api.db.HikariCPComponents
 import play.api.i18n.I18nComponents
 import play.api.BuiltInComponentsFromContext
 import play.filters.HttpFiltersComponents
+
 import controllers.HomeController
 import controllers.AddressController
+import controllers.UserController
 import controllers.AssetsComponents
+
 import akka.actor.ActorSystem
 import router.Routes
 import javax.inject.Singleton
@@ -34,8 +37,9 @@ class ApplicationComponents(context: Context) extends BuiltInComponentsFromConte
   lazy val appActorSystem: ActorSystem = actorSystem
   lazy val homeController = wire[HomeController]
   lazy val addressController = wire[AddressController]
+  lazy val userController = wire[UserController]
 //  lazy val router = wire[Routes]
-  lazy val router: Router = new Routes(httpErrorHandler, homeController, addressController, assets)
+  lazy val router: Router = new Routes(httpErrorHandler, homeController, addressController, userController, assets)
   
   applicationEvolutions
 }

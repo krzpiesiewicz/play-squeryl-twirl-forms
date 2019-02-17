@@ -1,0 +1,16 @@
+@* address Template File *@
+@import scala.reflect.{ClassTag,classTag}
+@import helper._
+
+@import elements._
+@import forms.ClassTagsHelper._
+
+@(f: Form[_], prefixKey: String = "")(implicit messages: Messages, request: RequestHeader)
+
+@inputHidden(classTagField(classTag[CountrysideAddress], prefixKey))
+@inputHidden(f(prefixKey + "idOpt"))
+@inputText(f(prefixKey + "country"))
+@inputText(f(prefixKey + "state"))
+@inputText(f(prefixKey + "county"))
+@inputText(f(prefixKey + "houseNumber"))
+@locationFields(f, prefixKey + "location.")

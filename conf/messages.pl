@@ -3,6 +3,7 @@ footer=Przykładowy projekt MVC w PlayFramework 2.6 zrobiony przez Krzyszofa Pie
 nav.home=Strona główna
 nav.locationExample=Prosty przykład ze współrzędnymi geograficznymi
 nav.addressesExample=Przykład z adresami
+nav.usersExample=Przykład z użytkownikami
 
 check=Sprawdź
 register=Rejestracja
@@ -48,3 +49,15 @@ addresses.addresses=Adresy
 addresses.address=Adres
 
 addresses.addressCreated=Adres został pomyślnie dodany.
+addresses.typeNotChosen=Należy wybrać typ adresu.
+
+user.form=Formularz użytkownika
+user.data=Dane użytkownika
+
+username=Nazwa użytkownika
+password=Hasło
+firstName=Imię
+lastName=Nazwisko
+email=Adres e-mail
+
+

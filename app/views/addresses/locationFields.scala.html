@@ -1,0 +1,6 @@
+@* location Template File *@
+@(f: Form[_], key: String = "")(implicit messages: Messages, request: RequestHeader)
+@import helper._
+
+@inputText(f(key + "latitude"), '_label -> messages("latitude"))
+@inputText(f(key + "longitude"), '_label -> messages("longitude"))

@@ -1,0 +1,10 @@
+@* renderDivsWithFields Template File *@
+@import forms._
+@import forms.Forms._
+@import views.FormRenderersHelper._
+@import views.traitformswitcher.TraitFormSwitcherHelper
+@import views.addresses.formswitcher.AddressFormSwitcherHelper._
+
+@(switcherId: String, prefixKey: String = "", filledForms: Seq[TraitForm[Address]] = Seq.empty)(implicit messages: Messages, request: RequestHeader, renderer: TraitFormRenderer[Address])
+
+@TraitFormSwitcherHelper.renderDivsWithFields[Address](defaultForms, switcherId, prefixKey, filledForms)

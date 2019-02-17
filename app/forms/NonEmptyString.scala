@@ -1,10 +1,17 @@
 package forms
 
-import play.api.data.Forms._
-import play.api.data.Mapping
-import play.api.data.format.Formatter
+import scala.language.implicitConversions
 
-class NonEmptyString(val s: String) {
+import play.api.data.Forms._
+import play.api.data.{Mapping, FieldMapping}
+import play.api.data.validation.Constraints._
+import play.api.data.format.Formatter
+import play.api.data.validation.ValidationError
+import play.api.data.validation.Constraint
+import play.api.data.validation.Invalid
+import play.api.data.validation.Valid
+
+case class NonEmptyString(val s: String) {
   override def toString = s
 }
 
@@ -26,5 +33,13 @@ object NonEmptyString {
     override def unbind(key: String, value: NonEmptyString) = Map(key -> value.toString)
   }
   
-  implicit val mapping: Mapping[NonEmptyString] = of[NonEmptyString]
+  val constraint = Constraints.createConstraint[NonEmptyString]("constraint.required", Seq(nes => {
+    if (nes.s.isEmpty())
+      Invalid(Seq(ValidationError(Seq("error.required"), Seq.empty)))
+    else
+      Valid
+      }))
+  
+  implicit val mapping: Mapping[NonEmptyString] = of[NonEmptyString](formatter).verifying(constraint)
+//  implicit val mapping: Mapping[NonEmptyString] = nonEmptyText
 }

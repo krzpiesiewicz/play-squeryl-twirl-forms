@@ -1,0 +1,11 @@
+@* renderRadios Template File *@
+@import scala.reflect.{ClassTag, classTag}
+@import forms._
+@import forms.Forms._
+@import views.FormRenderersHelper._
+@import views.traitformswitcher.TraitFormSwitcherHelper
+@import views.addresses.formswitcher.AddressFormSwitcherHelper._
+
+@(switcherId: String, prefixKey: String = "", selected: ClassTag[_] = classTag[Nothing])(implicit messages: Messages)
+
+@TraitFormSwitcherHelper.renderRadios[Address](tagAndLabelsMsgs, switcherId, prefixKey, selected)

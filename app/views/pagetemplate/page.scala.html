@@ -4,7 +4,7 @@
 @(title: String)(content: Html)(scripts: Html = HtmlFormat.empty)(implicit messages: Messages, request: RequestHeader)
 
 <!DOCTYPE html>
-<html lang="@messages("lang.code")">
+<html lang="@messages.lang.code">
     <head>
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">

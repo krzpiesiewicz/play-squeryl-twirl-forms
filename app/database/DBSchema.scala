@@ -43,7 +43,8 @@ object DBSchema extends Schema {
           uaDao.street,
           uaDao.houseNumber,
           uaDao.flatNumber,
-          location)
+          location,
+          Some(id))
       }
       case AddressDAO.countrysideTypeId => {
         val caDao = countrysideAddresses.lookup(id).get
@@ -52,7 +53,8 @@ object DBSchema extends Schema {
           caDao.state,
           caDao.county,
           caDao.houseNumber,
-          location)
+          location,
+          Some(id))
       }
       case _ => throw new Exception("Unknkown address type")
     }
@@ -149,49 +151,62 @@ object DBSchema extends Schema {
       }
     }
 
-    def insert(address: Address): AddressDAO = inTransaction {
+    def insertOrUpdate(address: Address): Either[Boolean, Long] = inTransaction {
+      address.idOpt match {
+        case None => Right(insert(address))
+        case Some(id) =>
+          table.lookup(id) match {
+            case None => Right(insert(address))
+            case Some(dao) => Left(update(address))
+          }
+      }
+    }
+
+    def insert(address: Address): Long = inTransaction {
       val locationDAO = locations.insert(LocationDAO(address.location))
 
       address match {
         case ua: UrbanAddress => {
           val dao = table.insert(new AddressDAO(locationDAO.id, AddressDAO.urbanTypeId))
           urbanAddresses.insert(UrbanAddressDAO(dao.id, ua))
-          dao
+          dao.id
         }
         case ca: CountrysideAddress => {
           val dao = table.insert(new AddressDAO(locationDAO.id, AddressDAO.countrysideTypeId))
           countrysideAddresses.insert(CountrysideAddressDAO(dao.id, ca))
-          dao
+          dao.id
         }
       }
     }
 
-    def update(id: Long, address: Address): Boolean = inTransaction {
-      table.lookup(id) match {
-        case Some(dao) => {
-          try {
-            locations.update(LocationDAO(address.location, dao.locationId))
-            address match {
-              case ua: UrbanAddress => {
-                if (dao.typeId != AddressDAO.urbanTypeId)
-                  throw new Exception("Change of address type is not allowed")
-                urbanAddresses.update(UrbanAddressDAO(dao.id, ua))
-                true
+    def update(address: Address): Boolean = inTransaction {
+      address.idOpt match {
+        case None => false
+        case Some(id) => table.lookup(id) match {
+          case None => false
+          case Some(dao) => {
+            try {
+              locations.update(LocationDAO(address.location, dao.locationId))
+              address match {
+                case ua: UrbanAddress => {
+                  if (dao.typeId != AddressDAO.urbanTypeId)
+                    throw new Exception("Change of address type is not allowed")
+                  urbanAddresses.update(UrbanAddressDAO(dao.id, ua))
+                }
+                case ca: CountrysideAddress => {
+                  if (dao.typeId != AddressDAO.countrysideTypeId)
+                    throw new Exception("Change of address type is not allowed")
+                  countrysideAddresses.update(CountrysideAddressDAO(dao.id, ca))
+                }
               }
-              case ca: CountrysideAddress => {
-                if (dao.typeId != AddressDAO.countrysideTypeId)
-                  throw new Exception("Change of address type is not allowed")
-                countrysideAddresses.update(CountrysideAddressDAO(dao.id, ca))
-                true
+              true
+            } catch {
+              case e: Exception => {
+                false
               }
-            }
-          } catch {
-            case e: Exception => {
-              false
             }
           }
         }
-        case None => false
       }
     }
   }

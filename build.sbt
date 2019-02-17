@@ -56,6 +56,10 @@ libraryDependencies += "com.typesafe.play" %% "play-jdbc-evolutions" % "2.7.0-M4
 // Automatic Case Class Mappings (via runtime reflection):
 libraryDependencies += "com.iterable" %% "iterableplayutils" % "2.0.0"
 
+// For hashing passwords:
+// https://mvnrepository.com/artifact/org.mindrot/jbcrypt
+libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
+
 import DatabaseManaging._
 import CreatingExampleData._
 commands ++= Seq(cleanupEvolutions, dropEvolutions, dropDb, createDdl, createDbExplicitly, createExampleData)

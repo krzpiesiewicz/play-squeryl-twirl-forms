@@ -1,8 +1,8 @@
-@* location Template File *@
+@* simpleLocationPage Template File *@
 @(locationForm: Form[Location])(implicit messages: Messages, request: RequestHeader)
 @import helper._
 
-@page(messages("nav.locationExample")) {
+@pagetemplate.page(messages("nav.locationExample")) {
   <div>
   <h1>@messages("locationTester")</h1>
   @form(action = routes.AddressController.locationPost()) {

@@ -3,6 +3,7 @@ footer=Example PlayFramework 2.6 MVC project by Krzyszof Piesiewicz.
 nav.home=Home
 nav.locationExample=Simple location example
 nav.addressesExample=Addresses example
+nav.usersExample=Users example
 
 check=Check
 register=Register
@@ -39,3 +40,14 @@ addresses.addresses=Addresses
 addresses.address=Address
 
 addresses.addressCreated=The address added successfully.
+addresses.typeNotChosen=The type of address has not been chosen.
+
+user.form=User Form
+user.data=User Data
+
+username=Username
+password=Password
+firstName=First Name
+lastName=Last Name
+email=E-mail
+

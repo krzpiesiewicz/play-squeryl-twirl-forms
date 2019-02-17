@@ -8,12 +8,14 @@ GET     /lang/redirect                      controllers.HomeController.langRedir
 
 GET     /addresses                          controllers.AddressController.addresses
 GET     /addresses/:id                      controllers.AddressController.addressesWithOneSelected(id: Long)
-POST    /address/post/urban                 controllers.AddressController.urbanAddressPost
-POST    /address/post/country               controllers.AddressController.countrysideAddressPost
-POST    /address/post/delete/:id            controllers.AddressController.addressDelete(id: Long)
+POST    /address/post                       controllers.AddressController.addressPost
+POST    /address/delete/:id                 controllers.AddressController.addressDelete(id: Long)
 
 GET     /location                           controllers.AddressController.location
 POST    /location/post                      controllers.AddressController.locationPost
+
+GET     /users                              controllers.UserController.users
+POST    /user/post                          controllers.UserController.userPost
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                       controllers.Assets.versioned(path="/public", file: Asset)

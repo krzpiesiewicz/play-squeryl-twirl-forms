@@ -7,22 +7,12 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.i18n.{ Langs, Lang }
 
-import org.squeryl.{ Session, SessionFactory }
-
-import database.CustomTypeMode._
-import database.{ DBSchema => schema }
-import schema._
-
-import database.DBSchema.LocationDAO
-import database.DBSchema.implicits._
-import models.Location
-
 @Singleton
 class HomeController @Inject() (cc: ControllerComponents) extends AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def index() = Action { implicit request: Request[AnyContent] =>
     {
-      Ok(views.html.index())
+      Ok(views.html.indexPage())
     }
   }
 

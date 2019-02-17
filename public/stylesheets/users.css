@@ -1,0 +1,8 @@
+div[id=userFormDivsContainer] {
+	display: flex;
+	flex-direction: row;
+}
+
+div[id=userFormDivsContainer] * {
+	margin-top: 0;
+}

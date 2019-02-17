@@ -12,6 +12,7 @@ import forms.NonEmptyString
 
 sealed trait Address {
   val location: Location
+  val idOpt: Option[Long]
 }
 
 case class UrbanAddress(
@@ -21,7 +22,8 @@ case class UrbanAddress(
   street: String,
   houseNumber: String,
   flatNumber: Option[Int],
-  override val location: Location) extends Address {
+  override val location: Location,
+  override val idOpt: Option[Long] = None) extends Address {
 }
 
 object UrbanAddress {
@@ -32,7 +34,8 @@ object UrbanAddress {
     "street" -> nonEmptyText,
     "houseNumber" -> nonEmptyText,
     "flatNumber" -> optional(number),
-    "location" -> Location.mapping)(UrbanAddress.apply)(UrbanAddress.unapply)
+    "location" -> Location.mapping,
+    "idOpt" -> optional(longNumber))(UrbanAddress.apply)(UrbanAddress.unapply)
 }
 
 case class CountrysideAddress(
@@ -40,7 +43,8 @@ case class CountrysideAddress(
   state: NonEmptyString,
   county: NonEmptyString,
   houseNumber: NonEmptyString,
-  override val location: Location) extends Address
+  override val location: Location,
+  override val idOpt: Option[Long] = None) extends Address
 
 object CountrysideAddress {
   implicit val mapping = CaseClassMapping.mapping[CountrysideAddress]

@@ -1,9 +1,0 @@
-@* hiddenId Template File *@
-@(idOpt: Option[Long])
-
-@idOpt match {
-	case None => { }
-	case Some(id) => {
-		<input type="number" id="id" name="id" value="@id" hidden />
-	}
-}
