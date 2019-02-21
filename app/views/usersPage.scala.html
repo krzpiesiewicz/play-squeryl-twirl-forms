@@ -27,7 +27,14 @@
             <th>@messages("username")</th><td>@userData.username</td>
           </tr>
           <tr>
-            <th>@messages("emails")</th><td>@userData.emails</td>
+            <th>@messages("emails")</th>
+            <td>
+              <ul>
+              @for(email <- userData.emails) {
+                <li>@email</li>
+              }
+              </ul>
+            </td>
           </tr>
           <tr>
             <th>@messages("firstName")</th><td>@userData.firstName</td>

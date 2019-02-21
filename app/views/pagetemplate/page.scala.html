@@ -1,7 +1,10 @@
 @* page Template File *@
 @import play.twirl.api.HtmlFormat
 
-@(title: String)(content: Html)(css: Html = HtmlFormat.empty)(scripts: Html = HtmlFormat.empty)(implicit messages: Messages, request: RequestHeader, session: play.api.mvc.Session))
+@(title: String)(content: Html)(css: Html = HtmlFormat.empty)(scripts: Html = HtmlFormat.empty)(implicit
+	messages: Messages, 
+	request: RequestHeader,
+	session: play.api.mvc.Session)
 
 <!DOCTYPE html>
 <html lang="@messages.lang.code">
