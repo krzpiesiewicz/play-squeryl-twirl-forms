@@ -6,13 +6,18 @@
 GET     /                                   controllers.HomeController.index
 GET     /lang/redirect                      controllers.HomeController.langRedirection
 
+GET     /login                              controllers.AuthenticationController.login
+GET    /logout                              controllers.AuthenticationController.logout
+POST    /loginPost                          controllers.AuthenticationController.loginPost
+
+
+GET     /location                           controllers.LocationController.location
+POST    /location/post                      controllers.LocationController.locationPost
+
 GET     /addresses                          controllers.AddressController.addresses
 GET     /addresses/:id                      controllers.AddressController.addressesWithOneSelected(id: Long)
 POST    /address/post                       controllers.AddressController.addressPost
 POST    /address/delete/:id                 controllers.AddressController.addressDelete(id: Long)
-
-GET     /location                           controllers.AddressController.location
-POST    /location/post                      controllers.AddressController.locationPost
 
 GET     /users                              controllers.UserController.users
 POST    /user/post                          controllers.UserController.userPost

@@ -1,6 +1,6 @@
 @* indexPage Template File *@
-@()(implicit messages: Messages, request: RequestHeader)
+@()(implicit messages: Messages, session: play.api.mvc.Session, request: RequestHeader)
 
 @pagetemplate.page(messages("nav.home")) {
   <h1>@messages("home.text")</h1>
-}()
+}()()

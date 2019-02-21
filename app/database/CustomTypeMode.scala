@@ -4,6 +4,7 @@ import org.squeryl.SessionFactory
 import org.squeryl.customtypes.CustomType
 
 object CustomTypeMode extends org.squeryl.PrimitiveTypeMode {
+  
   trait Domain[A] {
     self: CustomType[A] =>
 

@@ -1,6 +1,10 @@
 package controllers
 
-import javax.inject._
+import com.google.inject._
+
+import akka.actor.ActorSystem
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 import play.api._
 import play.api.mvc._
@@ -11,6 +15,7 @@ import play.api.i18n.MessagesApi
 import play.api.i18n.Messages
 import play.api.http._
 import play.api.http.Status._
+import play.api.libs.concurrent.CustomExecutionContext
 
 import org.squeryl.{ Session, SessionFactory }
 
@@ -20,41 +25,31 @@ import schema._
 import schema.implicits._
 
 import models._
-import forms._
-import forms.Forms._
 
-import views.addresses.AddressFormRenderer
+import forms.TraitMapping
+
+import Authentication.{AuthenticatedUserAction, UserActionBuilder, AdminAction}
 
 @Singleton
-class AddressController @Inject() (cc: ControllerComponents) extends AbstractController(cc) with I18nSupport {
+class AddressController @Inject() (
+    cc: ControllerComponents,
+    implicit val executionContext: ExecutionContext,
+    implicit val parser: BodyParsers.Default,
+    implicit val userActionBuilder: UserActionBuilder) extends AbstractController(cc) with I18nSupport {
 
-  def location() = Action { implicit request: Request[AnyContent] =>
-    {
-      Ok(views.html.simpleLocationPage(locationForm))
-    }
-  }
+  import AddressController._
 
-  def locationPost = Action { implicit request: Request[AnyContent] =>
-    {
-      locationForm.bindFromRequest.fold(
-        formWithErrors => {
-          BadRequest(views.html.simpleLocationPage(formWithErrors))
-        },
-        location => {
-          Ok(views.html.simpleLocationPage(locationForm.fill(location)))
-        })
-    }
-  }
+  val addressForm = Form(Address.mapping)
 
-  def addresses() = Action { implicit request: Request[AnyContent] =>
+  def addresses() = Action.async { implicit request: Request[AnyContent] => Future {
     addressesHelp()
-  }
+  }}
 
-  def addressesWithOneSelected(addressId: Long) = Action { implicit request: Request[AnyContent] =>
+  def addressesWithOneSelected(addressId: Long) = Action.async { implicit request: Request[AnyContent] => Future {
     addressesHelp(Some(addressId))
-  }
+  }}
 
-  def addressDelete(addressId: Long) = Action { implicit request: Request[AnyContent] =>
+  def addressDelete(addressId: Long) = AdminAction { implicit request: Request[AnyContent] => Future {
     transaction {
       schema.addresses.delete(addressId)
     } match {
@@ -62,98 +57,76 @@ class AddressController @Inject() (cc: ControllerComponents) extends AbstractCon
       case false => addressesHelp(
         Some(addressId),
         None,
-        Some(Messages("address.delete.error")),
+        Some(Messages("addresses.delete.error", addressId)),
         Some(routes.AddressController.addressesWithOneSelected(addressId).url),
         Some(BAD_REQUEST))
     }
-  }
+  }}
 
-  def addressPost() = Action { implicit request: Request[AnyContent] =>
+  def addressPost() = AuthenticatedUserAction { implicit request: Request[AnyContent] =>
     {
-      addressFormHelper.getTraitFormFromRequest() match {
-        case Left(msg) => addressesHelp(
-          msgOpt = Some(Messages("addresses.typeNotChosen")),
-          statusOpt = Some(BAD_REQUEST))
-        case Right(addressForm) => {
-
-          val idOpt = Form(single("idOpt" -> optional(longNumber))).bindFromRequest().value.getOrElse(None)
-
-          addressForm.form.bindFromRequest.fold(
-            formWithErrors => {
-              addressesHelp(idOpt, Some(addressForm.create(formWithErrors)), None, None, Some(BAD_REQUEST))
-            },
-            address => {
-              val (idOpt2, traitForm, msgOpt, noRedirection, statusCode) = transaction {
-                schema.addresses.insertOrUpdate(address) match {
-                  case Left(updated) => {
-                    val traitForm = addressForm.create(addressForm.form.fillAndValidate(address))
-                    updated match {
-                      case false => (idOpt, traitForm, Some(Messages("addresses.cannotUpdateAddress")), true, BAD_REQUEST)
-                      case true => (idOpt, traitForm, None, false, ACCEPTED)
-                    }
-                  }
-                  case Right(createdId) => {
-                    val traitForm = addressForm.create(addressForm.form.fillAndValidate(address))
-                    (Some(createdId), traitForm, Some(Messages("addresses.addressCreated")), false, CREATED)
-                  }
-                }
-              }
-
-              val redirectionOpt = if (noRedirection)
-                None
-              else idOpt2 match {
-                case None => None
-                case Some(id) => Some(routes.AddressController.addressesWithOneSelected(id).url)
-              }
-
-              addressesHelp(
-                idOpt2,
-                Some(traitForm),
-                msgOpt,
-                redirectionOpt,
-                Some(statusCode))
-            })
-        }
+      val idOpt = Form(single(TraitMapping.tagFieldName -> nonEmptyText)).bindFromRequest.value match {
+        case None => None
+        case Some(tag) => Form(single(s"${tag}.idOpt" -> optional(longNumber))).bindFromRequest().value.getOrElse(None)
       }
+
+      addressForm.bindFromRequest.fold(
+        formWithErrors => Future {
+          addressesHelp(idOpt, Some(formWithErrors), None, None, Some(BAD_REQUEST))
+        },
+        address => Future {
+          val callback = transaction {
+            schema.addresses.insertOrUpdate(address) match {
+              case Left(updated) => {
+                val redirectionOpt = idOpt match {
+                  case None => None
+                  case Some(id) => Some(routes.AddressController.addressesWithOneSelected(id).url)
+                }
+                val (msgOpt, statusCode) = updated match {
+                  case false => (Some(Messages("addresses.cannotUpdateAddress")), BAD_REQUEST)
+                  case true => (None, OK)
+                }
+                () => addressesHelp(idOpt, None, msgOpt, redirectionOpt, Some(statusCode))
+              }
+              case Right(createdId) => () => addressesHelp(
+                None,
+                Some(addressForm.fill(address)),
+                Some(Messages("addresses.addressCreated")),
+                Some(routes.AddressController.addressesWithOneSelected(createdId).url),
+                Some(CREATED))
+            }
+          }
+          callback()
+        })
     }
   }
 
-  import AddressController._
-
   def addressesHelp(
     addressIdOpt: Option[Long] = None,
-    addressFormOpt: Option[TraitForm[Address]] = None,
+    addressFormOpt: Option[Form[Address]] = None,
     msgOpt: Option[String] = None,
     urlToRedirectOpt: Option[String] = None,
     statusOpt: Option[Int] = None)(implicit request: Request[AnyContent]) = transaction {
 
     val listOfAddresses = schema.addresses.table.allRows
 
-    val (addressProps, statusCode) = addressIdOpt match {
+    val (addressProps, newAddressForm, statusCode) = addressIdOpt match {
       case Some(addressId) => {
         schema.addresses.lookup(addressId) match {
           case Some(dao) => {
-            val addressForm = addressFormOpt match {
-              case Some(addressForm) => addressForm
-              case None => addressFormHelper.getTraitFormForModelAndFill(dao)
+            val form = addressFormOpt match {
+              case Some(form) => form
+              case None => addressForm.fill(dao)
             }
-            (EditAddress(addressId, addressForm), statusOpt.getOrElse(OK))
+            (EditAddress(addressId, form), addressForm, statusOpt.getOrElse(OK))
           }
-          case None => (AddressNotFound(addressId), NOT_FOUND)
+          case None => (AddressNotFound(addressId), addressForm, NOT_FOUND)
         }
       }
-      case None => {
-        val props = addressFormOpt match {
-          case Some(addressForm) => NewAddress(addressForm)
-          case None => NoProps
-        }
-        (props, statusOpt.getOrElse(OK))
-      }
+      case None => (NoProps, addressFormOpt.getOrElse(addressForm), statusOpt.getOrElse(OK))
     }
 
-    implicit val addressFormRenderer: TraitFormRenderer[Address] = new AddressFormRenderer()
-
-    Status(statusCode)(views.html.addressesPage(listOfAddresses, addressProps, msgOpt, urlToRedirectOpt))
+    Status(statusCode)(views.html.addressesPage(listOfAddresses, addressProps, newAddressForm, msgOpt, urlToRedirectOpt))
   }
 }
 
@@ -163,9 +136,7 @@ object AddressController {
 
   case class AddressNotFound(addressId: Long) extends AddressProps
 
-  case class EditAddress(addressId: Long, addressForm: TraitForm[Address]) extends AddressProps
-
-  case class NewAddress(addressForm: TraitForm[Address]) extends AddressProps
+  case class EditAddress(addressId: Long, addressForm: Form[Address]) extends AddressProps
 
   case object NoProps extends AddressProps
 }

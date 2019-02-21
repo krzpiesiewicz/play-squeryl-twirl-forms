@@ -1,7 +1,7 @@
 @* langChooser Template File *@
 @import main.ScalaI18nService
 
-@()(implicit messages: Messages, request: RequestHeader)
+@()(implicit messages: Messages, session: play.api.mvc.Session, request: RequestHeader)
 
 <form action="/lang/redirect">
 	<select name="langCode" onchange="this.form.submit()">

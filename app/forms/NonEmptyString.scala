@@ -41,5 +41,4 @@ object NonEmptyString {
       }))
   
   implicit val mapping: Mapping[NonEmptyString] = of[NonEmptyString](formatter).verifying(constraint)
-//  implicit val mapping: Mapping[NonEmptyString] = nonEmptyText
 }

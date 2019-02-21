@@ -2,7 +2,14 @@ package main
 
 import org.squeryl.{ Session, SessionFactory }
 import org.squeryl.adapters.SQLiteAdapter
+
 import com.google.inject._
+
+import scala.concurrent.ExecutionContext
+
+import akka.actor.ActorSystem
+
+import play.api.libs.concurrent.CustomExecutionContext
 
 @Singleton
 class SquerylInitialization @Inject() (db: play.api.db.Database) {

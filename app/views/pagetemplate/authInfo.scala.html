@@ -1,0 +1,14 @@
+@* authInfo Template File *@
+@()(implicit messages: Messages, session: play.api.mvc.Session)
+
+@session.get("username") match {
+  case Some(username) => {
+  	<span class="logged">
+  	  @messages("loggedAs", username)
+  	</span>
+  	<a href="@routes.AuthenticationController.logout">@messages("logout")</a>
+  }
+  case None => {
+    <a href="@routes.AuthenticationController.login">@messages("login")</a>
+  }
+}

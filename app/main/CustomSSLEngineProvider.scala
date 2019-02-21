@@ -9,5 +9,4 @@ class CustomSSLEngineProvider(appProvider: ApplicationProvider) extends SSLEngin
   override def createSSLEngine(): SSLEngine = {
     SSLContext.getDefault.createSSLEngine
   }
-
 }

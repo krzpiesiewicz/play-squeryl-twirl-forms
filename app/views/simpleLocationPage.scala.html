@@ -1,15 +1,15 @@
 @* simpleLocationPage Template File *@
-@(locationForm: Form[Location])(implicit messages: Messages, request: RequestHeader)
+@(locationForm: Form[Location])(implicit messages: Messages, session: play.api.mvc.Session, request: RequestHeader)
 @import helper._
 
 @pagetemplate.page(messages("nav.locationExample")) {
   <div>
   <h1>@messages("locationTester")</h1>
-  @form(action = routes.AddressController.locationPost()) {
+  @form(action = routes.LocationController.locationPost()) {
 	@CSRF.formField
 	@inputText(locationForm("latitude"))
 	@inputText(locationForm("longitude"))
 	<input type="submit" value="@messages("check")">
   }
   </div>
-}()
+}()()

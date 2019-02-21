@@ -7,9 +7,11 @@ nav.usersExample=Users example
 
 check=Check
 register=Register
-login=Login
+login=Log in
 logout=Logout
-loggedAs=Logged as
+loggedAs=Logged as {0}
+log=Log in
+error.login=Log in failed
 
 home.text=Welcome in the example MVC webpage.
 
@@ -38,8 +40,9 @@ addresses.addressNotFound=Address of id {0} not found!
 addresses.addressOfId=Address of id {0}
 addresses.addresses=Addresses
 addresses.address=Address
+addresses.delete.error=Cannot delete address of id {0}!
 
-addresses.addressCreated=The address added successfully.
+addresses.addressCreated=The address added successfully!
 addresses.typeNotChosen=The type of address has not been chosen.
 
 user.form=User Form
@@ -49,5 +52,19 @@ username=Username
 password=Password
 firstName=First Name
 lastName=Last Name
+address=Address
+emails=E-mails
 email=E-mail
+email.number=E-mail no {0}
+phoneNumber=Phone number
+sex=Sex
+dateOfBirth=Date of birth
+aboutMe=About me
+confirmation=Confirmation
+subscription=Subscription
+
+constraint.confirmation=Please accept the general terms
+
+error.phoneNumber=A valid phone number is required.
+
 

@@ -1,0 +1,22 @@
+@* addressFields Template File *@
+@import scala.reflect.{ classTag, ClassTag }
+@import views.caseformsswitcher.CaseFormsSwitcherHelper._
+
+@(f: Form[_], prefixKey: String = "", label: String = "", hiddenRadios: Boolean = false)(implicit messages: Messages, request: RequestHeader)
+
+@caseDiv[T](fieldsHtml: Html)(implicit tag: ClassTag[T]) = {
+  <div name="@{divName(f, prefixKey)}" id="@{divId(f, prefixKey, tag)}" hidden>
+    @fieldsHtml
+  </div>
+}
+
+@caseformsswitcher.radios(
+	f,
+	prefixKey,
+	label,
+	List((classTag[UrbanAddress] -> messages("addresses.urbanAddress")),
+		 (classTag[CountrysideAddress] -> messages("addresses.countrysideAddress"))),
+	hiddenRadios)
+		 
+@caseDiv[UrbanAddress]{@urbanAddressFields(f, prefixKey + classTag[UrbanAddress].toString() + ".")}
+@caseDiv[CountrysideAddress]{@countrysideAddressFields(f, prefixKey + classTag[CountrysideAddress].toString() + ".")}

@@ -1,42 +1,42 @@
 @* page Template File *@
 @import play.twirl.api.HtmlFormat
 
-@(title: String)(content: Html)(scripts: Html = HtmlFormat.empty)(implicit messages: Messages, request: RequestHeader)
+@(title: String)(content: Html)(css: Html = HtmlFormat.empty)(scripts: Html = HtmlFormat.empty)(implicit messages: Messages, request: RequestHeader, session: play.api.mvc.Session))
 
 <!DOCTYPE html>
 <html lang="@messages.lang.code">
-    <head>
-        <title>@title</title>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/nav.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/tables.css")">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/jquery-3.3.1.min.js")"></script>
-        @scripts
-    </head>
-    <body>
-    	<header>
-    		<span class="title">
-    			@title
-    		</span>
-    		<span>
-    			@langChooser()
-    		</span>
-    	</header>
-    	<nav>
-    		<div>
-    			@navList()
-    		</div>
-    	</nav>
-    	<div id="main-container-scroll">
-    		<div>
-    			<article>
-        			@content
-        		</article>
-        		<footer>
-            		@messages("footer")
-        		</footer>
-        	</div>
-        </div>
-    </body>
+  <head>
+    <title>@title</title>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/nav.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/tables.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+    @css
+    <script type="text/javascript" src="@routes.Assets.versioned("javascripts/jquery-3.3.1.min.js")"></script>
+    @scripts
+  </head>
+  <body>
+    <header>
+      <span class="title">
+        @title
+      </span>
+      @langChooser()
+      @authInfo()
+    </header>
+    <nav>
+      <div>
+        @navList()
+      </div>
+    </nav>
+    <div id="main-container-scroll">
+      <div>
+        <article>
+          @content
+        </article>
+        <footer>
+          @messages("footer")
+        </footer>
+      </div>
+    </div>
+  </body>
 </html>

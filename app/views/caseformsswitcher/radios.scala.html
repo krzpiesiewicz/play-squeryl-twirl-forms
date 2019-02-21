@@ -1,0 +1,11 @@
+@* radios Template File *@
+@import scala.reflect.{ClassTag,classTag}
+@import helper._
+
+@import views.caseformsswitcher.CaseFormsSwitcherHelper._
+
+@(f: Form[_], prefixKey: String, label: String, tagsAndMsgs: Seq[(ClassTag[_], String)], hiddenRadios: Boolean)(implicit messages: Messages)
+
+<div id="@switcherId(f, prefixKey)" @if(hiddenRadios) {hidden}>
+  @inputRadioGroup(f(prefixKey + forms.TraitMapping.tagFieldName), options = tagsAndMsgs map {case (tag, msg) => (tag.toString, msg)}, '_label -> label)
+</div>

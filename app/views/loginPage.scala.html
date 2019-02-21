@@ -1,0 +1,18 @@
+@* loginPage Template File *@
+@import helper._
+@import elements._
+
+@(loginForm: Form[_])(implicit messages: Messages, session: play.api.mvc.Session, request: RequestHeader)
+
+@pagetemplate.page(messages("login")) {
+  <div>
+    <h1>@messages("login")</h1>
+    @form(action = routes.AuthenticationController.loginPost) {
+      @CSRF.formField
+	  @inputText(loginForm("username"))
+	  @inputPassword(loginForm("password"))
+	  @formErrors(loginForm)
+	  <input type="submit" value="@messages("log")">
+    }
+  </div>
+}()()

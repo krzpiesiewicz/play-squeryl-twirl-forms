@@ -27,18 +27,6 @@ object Sex extends Enumeration {
 
 import Sex.Sex
 
-case class User(
-    username: String,
-    passwordHash: String,
-    firstName: String,
-    lastName: String,
-    sex: Sex,
-    dateOfBirth: Date,
-    address: Address,
-    phoneNumber: String,
-    emails: List[String],
-    aboutMe: String)
-
 case class UserData(
     username: String,
     password: String,
@@ -46,6 +34,7 @@ case class UserData(
     lastName: String,
     sex: Sex,
     dateOfBirth: Date,
+    address: Address,
     phoneNumber: String,
     emails: List[String],
     aboutMe: String,
@@ -59,24 +48,11 @@ object UserData {
     "firstName" -> nonEmptyText,
     "lastName" -> nonEmptyText,
     "sex" -> of[Sex],
-    "dateOfBirth" -> date("dd-MM-yyyy"),
-    "phoneNumber" -> text.verifying(constraint = _.matches("""[+][\\d]{1,4}(\\w)*[\\d]{9}"""), error="A valid phone number is required."),
+    "dateOfBirth" -> date("yyyy-MM-dd"),
+    "address" -> Address.mapping,
+    "phoneNumber" -> text.verifying(constraint = _.matches("""[+][\d]{1,4}([\s-]*[\d]{3}){3}"""), error="error.phoneNumber"),
     "emails" -> list(email),
     "aboutMe" -> text,
-    "confirmation" -> checked("Please accept the general terms."),
+    "confirmation" -> checked("constraint.confirmation"),
     "subscription" -> boolean)(UserData.apply)(UserData.unapply)
-}
-
-object User {
-  def apply(data: UserData, address: Address): User = User(
-      data.username,
-      BCrypt.hashpw(data.password, BCrypt.gensalt()),
-      data.firstName,
-      data.lastName,
-      data.sex,
-      data.dateOfBirth,
-      address,
-      data.phoneNumber,
-      data.emails,
-      data.aboutMe)
 }

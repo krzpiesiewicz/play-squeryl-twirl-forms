@@ -7,27 +7,48 @@
 @import database.DBSchema.AddressDAO
 @import controllers.{AddressController => AC}
 
-@import views.FormRenderersHelper._
+@import views.html.addresses.renderAddress
 @import elements.script
 
 @(userDataForm: Form[UserData],
-  addressFormOpt: Option[TraitForm[Address]] = None,
-  userOpt: Option[User] = None,
-  msgOpt: Option[String] = None,
-  urlToRedirectOpt: Option[String] = None)(implicit
+  userDataOpt: Option[UserData] = None)(implicit
   messages: Messages,
-  request: RequestHeader,
-  renderer: TraitFormRenderer[Address])
+  session: play.api.mvc.Session,
+  request: RequestHeader)
 
-@userBlock = {
-  @userOpt match {
+@userDataBlock = {
+  @userDataOpt match {
   	case None => {}
-    case Some(user) => {
+    case Some(userData) => {
   	  <div>
         <h1>@messages("user.data")</h1>
         <table>
           <tr>
-            <th>@messages("username")</th><td>@user.username</td>
+            <th>@messages("username")</th><td>@userData.username</td>
+          </tr>
+          <tr>
+            <th>@messages("emails")</th><td>@userData.emails</td>
+          </tr>
+          <tr>
+            <th>@messages("firstName")</th><td>@userData.firstName</td>
+          </tr>
+          <tr>
+            <th>@messages("lastName")</th><td>@userData.lastName</td>
+          </tr>
+          <tr>
+            <th>@messages("sex")</th><td>@messages(userData.sex.toString)</td>
+          </tr>
+          <tr>
+            <th>@messages("dateOfBirth")</th><td>@userData.dateOfBirth</td>
+          </tr>
+          <tr>
+            <th>@messages("phoneNumber")</th><td>@userData.phoneNumber</td>
+          </tr>
+          <tr>
+            <th>@messages("address")</th><td>@renderAddress(userData.address)</td>
+          </tr>
+          <tr>
+            <th>@messages("aboutMe")</th><td>@Html(userData.aboutMe)</td>
           </tr>
         </table>
 	  </div>
@@ -44,24 +65,24 @@
 	      @CSRF.formField
 	      @inputText(userDataForm("username"))
 	      @inputPassword(userDataForm("password"))
-	      @repeat(userDataForm("emails"), min = 1) { emailField =>
-    	    @inputText(emailField)
+	      @repeatWithIndex(userDataForm("emails"), min = 2) { (emailField, no) =>
+    	    @inputText(emailField, '_label -> messages("email.number", no + 1))
           }
         </div>
         <div>
           @inputText(userDataForm("firstName"))
 	      @inputText(userDataForm("lastName"))
-	      @inputRadioGroup(userDataForm("sex"), options = List("male" -> "male", "female" -> "female"))
-	      @inputDate(userDataForm("dateOfBirth"))
+	      @inputRadioGroup(userDataForm("sex"), options = List(Sex.MALE.toString -> messages("male"), Sex.FEMALE.toString -> messages("female")))
+	      @inputDate(userDataForm("dateOfBirth"), '_showConstraints -> false)
         </div>
         <div>
-          @addresses.formswitcher.renderRadios(switcherId, "address.")
-	      @addresses.formswitcher.renderDivsWithFields(switcherId, "address.")
+	      @inputText(userDataForm("phoneNumber"))
+	      @addresses.addressFields(userDataForm, "address.", messages("address"))
         </div>
         <div>
-          @textarea(userDataForm("aboutMe"))
-          @checkbox(userDataForm("confirmation"), 'info -> "constraints.required")
-          @checkbox(userDataForm("subscription"))     
+          @textarea(userDataForm("aboutMe"), 'rows -> 20, 'cols -> 60)
+          @checkbox(userDataForm("confirmation"), '_help -> messages("constraint.required"), '_showConstraints -> false)
+          @checkbox(userDataForm("subscription"), '_showConstraints -> false)     
         </div>
       </div>
       <div>
@@ -71,13 +92,27 @@
   </div>
 }
 
-@switcherId = @{"newAddress"}
+@tempBlock = {
+  <div>
+    <h1>TempBlock</h1>
+    @for(e <- userDataForm.errors) {
+	  @e.toString()  :  @e.format
+	  <br/>
+	}
+	<br/>
+	@for(e <- userDataForm.constraints) {
+	  @e.toString()
+	  <br/>
+	}
+  </div>
+}
 
 @pagetemplate.page(messages("nav.usersExample")) {
   @formBlock
-  @userBlock
+  @userDataBlock
+  @*@tempBlock*@
 } {
-    @script(views.js.pagetemplate.msgAndRedirection(msgOpt, urlToRedirectOpt))
-    @script(views.js.traitformswitcher.traitFormSwitcher(switcherId, "address."))
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/users.css")">
+  <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/users.css")">
+} {
+  @script(views.js.caseformsswitcher.caseFormsSwitcher(userDataForm, "address."))
 }

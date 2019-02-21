@@ -9,8 +9,8 @@
 
 @inputHidden(classTagField(classTag[CountrysideAddress], prefixKey))
 @inputHidden(f(prefixKey + "idOpt"))
-@inputText(f(prefixKey + "country"))
-@inputText(f(prefixKey + "state"))
-@inputText(f(prefixKey + "county"))
-@inputText(f(prefixKey + "houseNumber"))
+@inputText(f(prefixKey + "country"), '_label -> messages("country"))
+@inputText(f(prefixKey + "state"), '_label -> messages("state"))
+@inputText(f(prefixKey + "county"), '_label -> messages("county"))
+@inputText(f(prefixKey + "houseNumber"), '_label -> messages("houseNumber"))
 @locationFields(f, prefixKey + "location.")

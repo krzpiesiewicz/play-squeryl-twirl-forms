@@ -2,6 +2,8 @@ package models
 
 import com.iterable.play.utils.CaseClassMapping
 
+import scala.reflect.classTag
+
 import play.api.data._
 import play.api.data.validation._
 import play.api.data.Forms._
@@ -9,6 +11,7 @@ import play.api.data.FormError
 import play.api.data.Mapping
 
 import forms.NonEmptyString
+import forms.TraitMapping
 
 sealed trait Address {
   val location: Location
@@ -48,4 +51,12 @@ case class CountrysideAddress(
 
 object CountrysideAddress {
   implicit val mapping = CaseClassMapping.mapping[CountrysideAddress]
+}
+
+object Address {
+  implicit val mapping = TraitMapping[Address](
+    address => address match {
+      case _: UrbanAddress => classTag[UrbanAddress]
+      case _: CountrysideAddress => classTag[CountrysideAddress]
+    }).withCase[UrbanAddress].withCase[CountrysideAddress]
 }

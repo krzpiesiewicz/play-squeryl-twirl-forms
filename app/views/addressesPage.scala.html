@@ -1,21 +1,20 @@
 @* addressesPage Template File *@
-@import scala.reflect.{ClassTag,classTag}
 @import forms._
 @import database.DBSchema.AddressDAO
 @import controllers.{AddressController => AC}
 @import helper._
-@import views.FormRenderersHelper._
 @import addresses.renderAddress
-@import addresses.formswitcher
+@import addresses.addressFields
 @import elements.script
 
 @(addresses: Iterable[AddressDAO],
-  addressProps: AC.AddressProps,
+  selectedAddressProps: AC.AddressProps,
+  newAddressForm: Form[Address],
   msgOpt: Option[String],
   urlToRedirectOpt: Option[String])(implicit
   messages: Messages,
-  request: RequestHeader,
-  renderer: TraitFormRenderer[Address])
+  session: play.api.mvc.Session,
+  request: RequestHeader)
 
 @addressesBlock = {
   @if(!addresses.isEmpty) {
@@ -42,11 +41,11 @@
 }
 
 @editAddressBlock = {
-  @addressProps match {
+  @selectedAddressProps match {
     case AC.AddressNotFound(addressId) => {
       <div>
         <h1>@messages("addresses.addressNotFound", addressId)</h1>
-        </div>
+      </div>
     }
 	case AC.EditAddress(addressId, addressForm) => {
 	  <div>
@@ -57,49 +56,39 @@
 	    }
 	    @form(action = routes.AddressController.addressPost()) {
 	      @CSRF.formField
-	      @addressForm.renderFields()
+	      @addressFields(addressForm, hiddenRadios = true)
 	      <input type="submit" value="@messages("submit")">
 	    }
-	    </div>
+	  </div>
 	}
 	case _ => {}
   }
 }
 
 @newAddressBlock = {
-  @addressProps match {
-  	case AC.NewAddress(addressForm) => {@newAddressBlockHelp(Some(addressForm))}
-  	case _ => {@newAddressBlockHelp(None)}
-  }
-}
-
-@newAddressBlockHelp(addressFormOpt: Option[TraitForm[Address]]) = {
   <div>
 	<h1>@messages("addresses.addNewAddress")</h1>
 	@form(action = routes.AddressController.addressPost()) {
 	  @CSRF.formField
-	  @addressFormOpt match {
-	    case None => {
-	      @formswitcher.renderRadios(switcherId)
-	      @formswitcher.renderDivsWithFields(switcherId)
-	    }
-	    case Some(addressForm) => {
-	      @formswitcher.renderRadios(switcherId, selected = addressForm.tag)
-	      @formswitcher.renderDivsWithFields(switcherId, filledForms = Seq(addressForm))
-	    }
-      }
+	  @addressFields(newAddressForm)
       <input type="submit" value="@messages("submit")">
 	}
   </div>
 }
 
-@switcherId = @{"newAddress"}
-
 @pagetemplate.page(messages("nav.addressesExample")) {
   @addressesBlock
   @editAddressBlock
   @newAddressBlock
-} {
+}() {
+    @script(views.js.caseformsswitcher.caseFormsSwitcher(newAddressForm))
+    
+    @selectedAddressProps match {
+      case AC.EditAddress(_, addressForm) => {
+        @script(views.js.caseformsswitcher.caseFormsSwitcher(addressForm))
+      }
+      case _ => {}
+    }
+    
     @script(views.js.pagetemplate.msgAndRedirection(msgOpt, urlToRedirectOpt))
-    @script(views.js.traitformswitcher.traitFormSwitcher(switcherId))
 }
