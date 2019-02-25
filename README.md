@@ -1,7 +1,7 @@
 # play-squeryl-twirl-forms
 Example MVC project in PlayFramework (actions, twirl templates, forms, messages). Squeryl + Evolutions for databasing.
 
-There are examples of composing actions, creating html and js templates, forms, mappings, constraints, internationalization with messeages.
+There are examples of composing actions, creating html and js templates, forms, mappings, constraints, internationalization with messeages, extending play.api.data.Mapping[T] trait for more advanced use cases.
 
 My movie about the project: https://www.youtube.com/watch?v=fvKTLdyETHk (in Polish)
 
