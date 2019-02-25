@@ -3,6 +3,8 @@ Example MVC project in PlayFramework (actions, twirl templates, forms, messages)
 
 There are examples of composing actions, creating html and js templates, forms, mappings, constraints, internationalization with messeages.
 
+My movie about the project: https://www.youtube.com/watch?v=fvKTLdyETHk (in Polish)
+
 # Screenshots
 ![screeanshot01](.screenshots/Screenshot_20190221_140749.jpeg?raw=true "Screeanshot 01")
 ![screeanshot02](.screenshots/Screenshot_20190221_140849.jpeg?raw=true "Screeanshot 02")
